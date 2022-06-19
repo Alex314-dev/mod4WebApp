@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Kick-In Database Explorer</title>
+	<link rel="stylesheet" href="../Style/CSS/styles.css">
+	<link rel="stylesheet" href="../Style/CSS/loading.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+	<script src="https://kit.fontawesome.com/59dce4be9c.js" crossorigin="anonymous"></script>
+	<link href='https://css.gg/chevron-down.css' rel='stylesheet'>
+	<link rel="icon" href="/icon.svg" type="image/svg+xml">
+	
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.0.3/css/dataTables.dateTime.min.css">
+	
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+	<script src="https://cdn.datatables.net/datetime/1.0.3/js/dataTables.dateTime.min.js"></script>
+	
+	
+</head>
+
+<body>
+
+	<div id = "documentPreviewContainer">
+		<div id = "documenttitle"></div>
+		<div id = "readdocument">Tables</div>
+		<div id = "closebutton" title = "Close"><span id = "closestyle"><i class="fas fa-times fa-2x"></i></span></div>
+		<div id = "downloadbutton" title = "Download"><span id = "downloadstyle"><i class="fas fa-download fa-2x"></i></span></div>
+		<div id = "refreshbutton" title = "Refresh"><span id = "refreshstyle"><i class="fas fa-sync fa-2x"></i></span></div>
+	</div>
+	
+		<h1>Kick-In Database Explorer</h1>
+	
+		<div id = "credentials">
+			<div><div id = "name"><b>Name: </b></div></div>
+			<div><div id = "email"><b>E-mail: </b></div></div>
+			<div><div id = "logout"><i class="fas fa-sign-out-alt"></i> Sign-out</div></div>
+			<div id = "credentialsIcon"><i class="fas fa-user-circle fa-3x" title ="Credentials information"></i></div>
+			<div id = "credentialsResponse">
+				<div><div id = "nameResponse"><b>Name: </b></div></div>
+				<div><div id = "emailResponse"><b>E-mail: </b></div></div>
+				<div><div id = "logoutResponse"><i class="fas fa-sign-out-alt"></i> sign-out</div></div>
+			</div>
+		</div>
+
+
+	<div id = "search">
+		<div class="wrap">
+   			<div class="search">
+   				<button id = "dropdownAdvancedFilter" title = "Advanced search filters"><i class="fas fa-caret-down" id ="iconAdvancedSearch"></i></button>
+      			<input id = "searchField" type="search" class="searchTerm" placeholder="What are you looking for?">
+      			<button id = "searchButton" type="submit" class="searchButton" title = "Search">
+        		<i class="fa fa-search"></i>
+     			</button>
+  		 	</div>
+		</div>
+	</div>
+	<div id = "advancedSearch">
+		<div id = "date" style = "display: inline-grid">
+			<div id ="filterStartDate">
+				<div><span>Start date:  </span></div>
+							<!-- Founding year of Technische Hogeschool Twente(1961) -->
+				<div><input type="date" id="startDate" min='1961-01-01' max='2021-12-25' name="startDate">
+					<button id = "resetStartDate"><i class="fas fa-times"></i></button>
+				</div>
+			</div>
+			<div id ="filterEndDate">
+				<div><span>End date:  </span></div>
+				<div><input type="date" id="endDate" min='1961-01-01' max='2021-12-25' name="endDate">
+					<button id = "resetEndDate"><i class="fas fa-times"></i></button></div>
+			</div>
+		</div>
+		<div id = "filterEmail" style = "display: inline-grid">
+			<div id ="receiverEmail" style = "display: inline-block">
+				<div><span> Receiver: </span></div>
+				<div><input id ="filterReceiverEmail" type="search" placeholder="Enter email"></div>
+			</div>
+			<div id ="senderEmail" style = "display: inline-block">
+				<div><div style = "display: inline-block"><span> Sender: </span></div></div>
+				<div><div><input id ="filterSenderEmail" type="search"  placeholder="Enter email"></div></div>
+			</div>
+		</div>
+		<div id = "hasAttachment">
+			<label for = "filterHasAttachment">Has attachment: </label>
+			<input id ="filterHasAttachment" type="checkbox">
+		</div>
+	</div>
+	<div id = "emails">
+		<div class = "loadingio-spinner-double-ring-dw9h57zoghk"><div class="ldio-yhebgjchxv">
+			<div></div>
+			<div></div>
+			<div><div></div></div>
+			<div><div></div></div>
+			</div></div>
+		<table id="example" class="table table-striped table-bordered table-hover" style="width:100%">
+		    <thead id = "dataTableHeader">
+			    <tr>
+			      <th>Sender</th>
+			      <th>Subject</th>
+			      <th id = "dateOrder" title = "Sort by date">Date <i class="fas fa-sort-down"></i></th>
+			    </tr>
+		    </thead>
+	    </table>
+	    <div id = "info">
+    		<div id = "results">0 records out of 0</div>
+	    	<div id = "pagination">
+	    			<ul id = "paginationInside">
+	    			</ul>
+	    	</div>
+    	</div>
+    </div>
+    
+    
+</body>
+
+<script type="text/javascript">
+
+var host = location.origin;
+
+var dataTable;
+
+var start = 0;
+var length = 20;
+var search = "";
+var dateOrder = "desc";
+var startDate = "";
+var endDate = "";
+var receiverEmail = "";
+var senderEmail = "";
+var receiverEmail = "";
+var hasAttachment = false;
+
+var recordsTotal;
+var recordsFiltered;
+
+var totalPages;
+var currentPage = 1;
+
+
+$('#credentialsIcon').click(function() {
+	if ($('#credentialsResponse').css('display') == 'block') {
+		$('#credentialsResponse').css('display','none');
+	} else {
+		$('#credentialsResponse').css('display','block');
+	}
+});
+
+$('#logout').on('click', function() {
+	//link to logout endpoint
+	sessionStorage.clear();
+	location.href = host+"/kickInProject/rest/logout";
+});
+
+$('#logoutResponse').on('click', function() {
+	//link to logout endpoint
+	sessionStorage.clear();
+	location.href = host+"/kickInProject/rest/logout";
+});
+
+
+//Display the different filter options when the dropdown button is clicked
+$('#dropdownAdvancedFilter').click(function() {
+	  if ( $('#advancedSearch').css('visibility') == 'hidden' ) {
+		  $('#advancedSearch').css('visibility','visible');
+		  $('#dropdownAdvancedFilter').css('border-radius', '15px 0px 0px 0px');
+		  $('.searchButton').css('border-radius', '0 5px 0px 0');
+		  $('#iconAdvancedSearch').removeClass('fas fa-caret-down');
+		  $('#iconAdvancedSearch').addClass('fas fa-caret-up');
+	  }
+	  else {
+		  $('#advancedSearch').css('visibility','hidden');
+		  $('#dropdownAdvancedFilter').css('border-radius', '15px 0px 0px 15px');
+		  $('.searchButton').css('border-radius', '0 5px 5px 0');
+		  $('#iconAdvancedSearch').removeClass('fas fa-caret-up');
+		  $('#iconAdvancedSearch').addClass('fas fa-caret-down');
+	  }
+	  
+	});
+
+//Search button functionality which invokes the method for getting data
+$('#searchButton').click(function() {
+	
+	
+	window.currentPage = 1;
+	window.start = 0;
+	window.dateOrder = "desc";
+	
+	getAjaxData();
+	
+});
+
+
+
+//Set the max date that can be chosen to be todays date when the date filter is chosen
+$('#startDate').click(function() {
+	
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+ if(dd<10){
+        dd='0'+dd
+    } 
+    if(mm<10){
+        mm='0'+mm
+    } 
+
+today = yyyy+'-'+mm+'-'+dd;
+document.getElementById("startDate").setAttribute("max", today);
+	
+});
+
+$('#endDate').click(function() {
+	
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+ if(dd<10){
+        dd='0'+dd
+    } 
+    if(mm<10){
+        mm='0'+mm
+    } 
+
+today = yyyy+'-'+mm+'-'+dd;
+document.getElementById("endDate").setAttribute("max", today);
+	
+});
+
+
+$("input").on('keyup', function (e) {
+	//Number 13 is the "Enter" key on the keyboard
+	if (e.key === 'Enter' || e.keyCode === 13) {
+		// Trigger the button element with a click
+		document.getElementById("searchButton").click();
+	}
+});
+
+
+
+//Reset the date to dd/mm/yyyy when the resetdate button is clicked
+$('#resetStartDate').click(function(){
+	document.getElementById("startDate").valueAsDate = null;
+});
+
+$('#resetEndDate').click(function(){
+	document.getElementById("endDate").valueAsDate = null;
+});
+
+$(document).ready(function() {
+	
+	//we preserve the search values even if we leave the page (line 495)
+	//the if they are not null we retrive and set them
+
+	if (sessionStorage.getItem('search') != null) {
+		$('#searchField').val(sessionStorage.getItem('search'))
+		search = sessionStorage.getItem('search');
+	}
+	if (sessionStorage.getItem('dateOrder')!= null) {
+		if (sessionStorage.getItem('dateOrder') == "asc") {
+			$("#dateOrder").trigger('click');
+		}
+	}
+	if (sessionStorage.getItem('startDate')!= null) {
+		console.log(sessionStorage.getItem('startDate').replace(" 00:00:00",""));
+		$('#startDate').val(sessionStorage.getItem('startDate').replace(" 00:00:00",""));
+		startDate = sessionStorage.getItem('startDate');
+	}
+	if (sessionStorage.getItem('endDate')!= null) {
+		console.log(sessionStorage.getItem('endDate').replace(" 00:00:00",""));
+		$('#endDate').val(sessionStorage.getItem('endDate').replace(" 00:00:00",""));
+		endDate = sessionStorage.getItem('endDate');
+	}
+	if (sessionStorage.getItem('receiverEmail')!= null) {
+		$('#filterReceiverEmail').val(sessionStorage.getItem('receiverEmail'));
+		receiverEmail = sessionStorage.getItem('receiverEmail');
+	}
+	if (sessionStorage.getItem('senderEmail')!= null) {
+		$('#filterSenderEmail').val(sessionStorage.getItem('senderEmail'));
+		senderEmail = sessionStorage.getItem('senderEmail');
+	}
+	if ( sessionStorage.getItem('hasAttachment') == "true" ) {
+		console.log(sessionStorage.getItem('hasAttachment'));
+		$('#filterHasAttachment').prop('checked', true);
+	}
+	if (sessionStorage.getItem('currentPage')!= null) {
+		currentPage = sessionStorage.getItem('currentPage');
+	}
+	
+	
+	var userInfo;
+	
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			
+			if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+				location.href = this.responseURL;
+				
+			}
+			
+			var response = xmlhttp.responseText;
+
+			userInfo = JSON.parse(response);
+			
+			var userName = userInfo.name;
+			var userEmail = userInfo.email;
+			
+			$("#name").text("Name: " + userName);
+			$("#nameResponse").text("Name: " + userName);
+			$("#email").text("Email: " + userEmail);
+			$("#emailResponse").text("Email: " + userEmail);
+			
+		}
+	};
+	
+	xmlhttp.open("GET",host+"/kickInProject/rest/userInfo", true);
+	xmlhttp.send();
+	
+	getAjaxData();
+	 
+	 
+	 $("#filterSenderEmail").on('change', function() {
+		 dataTable.columns(0).search(this.value);
+	 }) 
+	 
+	 
+	 
+	 /*When we click outside the advanced filter or the search bar - the advanced filter closes*/
+	 /*When we click outside the credential icon the credentials container closes*/
+	 $(document).click(function(e) {
+	 	    var container = $("#advancedSearch");
+	 	    var icon = $("#iconAdvancedSearch");
+	 	    var button = $("#dropdownAdvancedFilter");
+	 	    var search = $("#example_filter");
+	  
+	     /* If the target of the click isn't the container */
+	     if ( (!container.is(e.target) && container.has(e.target).length === 0)
+	     	&& ( !button.is(e.target) && button.has(e.target).length === 0 )
+	     	&& ( !icon.is(e.target) && icon.has(e.target).length === 0) 
+	     	&& ( !search.is(e.target) && search.has(e.target).length === 0) ) {
+	     	
+	         $('#advancedSearch').css('visibility','hidden');
+	         $('#dropdownAdvancedFilter').css('border-radius', '15px 0px 0px 15px');
+	         $('.searchButton').css('border-radius', '0 5px 5px 0');
+	 		$('#iconAdvancedSearch').removeClass('fas fa-caret-up');
+	 		$('#iconAdvancedSearch').addClass('fas fa-caret-down');
+	     }
+	     
+	     	var profileIcon = $("#credentialsIcon");
+	     	var profileContainer = $("#credentialsResponse");
+	 		/* If the target of the click isn't the container */
+	 		if ( (!profileIcon.is(e.target) && profileIcon.has(e.target).length === 0)
+	 			&& (!profileContainer.is(e.target) && profileContainer.has(e.target).length === 0) ) {
+	 			
+	 			$('#credentialsResponse').css('display','none');
+	 		}
+
+	  });
+	 
+	 
+ });
+ 
+//Display the document
+ var documenturl;
+ 
+ $("#dateOrder").on('click', function () {
+	 descIcon = '<i class="fas fa-sort-down"></i>';
+	 ascIcon = '<i class="fas fa-sort-up"></i>';
+	 
+	 if (dateOrder == "asc") {
+		 dateOrder = "desc"
+		 $(this).html("Date "+ descIcon);
+		 
+	 } else if (dateOrder == "desc") {
+		 dateOrder = "asc"
+		 $(this).html("Date "+ ascIcon);
+	 }
+	 
+	 getAjaxData();
+	 
+ });
+ 
+ 
+ $(document).on('click', '.attachment', function(e) {
+	 
+	 documenturl = $(this).attr('title');
+	 
+	 $("#documenttitle").html(documenturl);
+	 var type = documenturl.split(".").pop();
+	 
+	 documenturl += "?"+("access_token="+getCookie("access_token"));//append the token as query parameter
+	 									  //so we can preview the document with google preview
+	 
+	 									  
+	 /* split on . get last possition of array to get the type */
+	 
+	 if (type == "png" || type == "jpg" || type == "jpeg") {
+		 
+		 url = host+"/kickInProject/rest/documents/"+documenturl;
+		 alt = host+"/kickInProject/rest/documents/not_found.png?"+(document.cookie);
+		 
+		 var picture = "<img id = \"embeddedpic\" = src = \""+url+"\" alt = \"image not found\" onerror = \"this.src=\'"+alt+"'; this.onerror = null\"></src>";
+		 
+		 $("#readdocument").after(picture);
+		 
+	 } else {		 
+		 url = "http://docs.google.com/gview?url="+host+"/kickInProject/rest/documents/"+documenturl+"&embedded=true"; 
+		 
+		 //contains IpAddress
+		 var iframe = "<iframe id = \"embedded\" src=\""+ url + "\"frameborder=\"0\"><h1>Test</h1>Test</iframe>";
+		 
+		 $("#readdocument").after(iframe);
+	 }
+	 $("#documentPreviewContainer").css("visibility","visible");
+	 
+ });
+ 
+ //Close the deocument previewer 
+ $("#closebutton").on('click', function() {
+	 
+	 $("#documentPreviewContainer").css("visibility","hidden");
+	 
+	 $("#embedded").remove();
+	 $("#embeddedpic").remove();
+	 
+ });
+ 
+ //Download document functionality
+ $("#downloadbutton").on('click', function() {
+	 
+	 document.location.href = host+"/kickInProject/rest/documents/" + documenturl;
+	 
+ });
+ 
+//Refresh document functionality
+ $("#refreshbutton").on('click', function() {
+	 
+	 previeurl = $("#embedded").attr("src");
+	 
+	 $("#embedded").attr("src", previeurl);
+	 
+ });
+ 
+
+ $("#readbutton").on('click', function() {
+	 
+		if ($("#readdocument").css('display') == 'block') {
+					$("#readdocument").css('display','none');
+				} else {
+					$("#readdocument").css('display','block')
+				}
+	 });
+
+
+ 
+$('#example').on('click', 'tbody tr', function (e) {
+	
+	var attachment = $(".attachment");
+	
+	 if (!attachment.is(e.target) && attachment.has(e.target).length === 0) {
+		 
+			var table = $("#example").DataTable();
+			var row = table.row($(this)).data();
+			
+			//before leaving the page we sore the search values
+			sessionStorage.setItem('search', search);
+			sessionStorage.setItem('dateOrder', dateOrder);
+			sessionStorage.setItem('startDate', startDate);
+			sessionStorage.setItem('endDate', endDate);
+			sessionStorage.setItem('receiverEmail', receiverEmail);
+			sessionStorage.setItem('senderEmail', senderEmail);
+			sessionStorage.setItem('hasAttachment', hasAttachment);
+			sessionStorage.setItem('currentPage', currentPage);
+			
+			location.href = host+"/kickInProject/rest/main/email/" + row.id;
+		 
+	 }
+	
+	});
+
+
+
+//Get data from server, having in mind filters and pagination 
+function getAjaxData() {
+	$(".loadingio-spinner-double-ring-dw9h57zoghk").css("display","block");
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			
+			if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+				location.href = this.responseURL;
+				
+			}
+			
+			var response = xmlhttp.responseText;
+			var ajax = JSON.parse(response);
+			
+			recordsTotal = ajax.recordsTotal;
+			recordsFiltered = ajax.recordsFiltered;
+			
+			totalPages = (Math.ceil(recordsFiltered/length));
+			
+			if (totalPages == 0) {
+				totalPages = 1;
+			}
+			
+			if (currentPage > totalPages) {
+				currentPage = totalPages;
+				start = length*(parseInt(currentPage)-1);
+				getAjaxData();
+			}
+			
+			var until = start+length;
+			
+			if ( (start+length) > (recordsFiltered) ) {
+				until = recordsFiltered;
+			}
+			
+			var info = "Showing " + (start+1) + " to " + until + " of <b>" + recordsFiltered + "</b> emails";
+			
+			if (recordsTotal != recordsFiltered) {
+				info += " (filtered from <b>" + recordsTotal + "</b>)";
+			}
+			
+			$("#results").html(info);
+			
+			createPaging(totalPages, currentPage);
+			
+			
+			if (!$.fn.DataTable.isDataTable($("#example")) ) {		//if the tables has not been created yet
+				createDataTable(ajax.data); 						// create it
+			} else {
+				dataTable.clear().rows.add(ajax.data).draw();
+			}
+			
+		}
+		
+		if (this.readyState == 4) {
+			
+			$(".loadingio-spinner-double-ring-dw9h57zoghk").css("display","none");
+			
+		}
+		
+	};
+	
+	passInputData();
+	var parameters = 
+			parametersToString(
+					start, length, search, dateOrder, startDate, endDate, receiverEmail, senderEmail);
+	
+	xmlhttp.open("GET",host+"/kickInProject/rest/emails/organisationmember?"+parameters, true);
+	xmlhttp.send();
+}
+
+function createDataTable(emails) {
+	var table = $("#example");
+	
+	dataTable = table.DataTable({
+		serverSide: false,		//we use our own implementation to satisfy the project requirments
+		data: emails,
+		"columns":[
+			{"data":"senderEmail", "orderable": false, "width": "22%"},
+			{"data": "null", "render": function ( data, type, row ) {
+				
+				var subject = "<label class = \"subjectText\"> " + row.subject + "</label>";
+				var plainTextContent = jQuery(row.content).text().replace(/\s\s+/g, ' ');	
+				
+				icon = "<i class=\"fas fa-users\"></i>";
+				
+				if (row.organisation == "") {
+					
+					icon = "<i class=\"fas fa-user\"></i>"
+					
+				}
+				
+				if (plainTextContent.length > 200) {
+					plainTextContent = plainTextContent.substr( 0, 200 ) + "..";
+				}
+				
+				var htmlSubjectAndContext = ("<div class = \"subjectColumn\">" + icon + " " + subject + " - " + plainTextContent) + "</div>";
+				
+				htmlAttachments = "<div class=\"allattachments\">";
+				
+				
+				var attachments = row.attachments;
+				var singleAttachment;
+				var type = "";
+				
+				if (attachments[0].title.length > 0) {
+					
+					for (var i = 0; i < attachments.length; i++) {
+						
+						singleAttachmentString = attachments[i].title + "." + attachments[i].type;
+						
+						if (attachments[i].type === "pdf") {
+							type = "<span style=\"color: red;\"> <i class=\"fas fa-file-pdf\"></i> </span>";
+						} else if (attachments[i].type === "pptx" || attachments[i].type === "ppt" ) {
+							type =  "<span style=\"color: orange;\"> <i class=\"fas fa-file-powerpoint\"></i> </span>";
+						} else if (attachments[i].type === "docx" || attachments[i].type === "doc" ) {
+							type =  "<span style=\"color: blue;\"> <i class=\"fas fa-file-word\"></i> </span>";
+						} else if (attachments[i].type === "png" || attachments[i].type === "jpg"
+								|| attachments[i].type === "jpeg" ) {
+							type =  "<span style=\"color: grey;\"> <i class=\"fas fa-file-image\"></i> </span>";
+						} else {
+							type = "<span style=\"color: grey;\"> <i class=\"fas fa-file\"></i> </span>";
+						}
+						
+						
+						htmlAttachments += "<div class=\"attachment\" title=\"" + singleAttachmentString + "\">"
+						+ type
+						+ singleAttachmentString
+						+ "</div>";
+					
+					}
+					
+				}
+				
+				htmlAttachments += "</div>";
+		        return (htmlSubjectAndContext + htmlAttachments);},
+		        
+		        "orderable": false, "width": "65%"},
+			{"data": "null", "render": function ( data, type, row ) {
+				
+				var year = row.sendAt.substring(2, 4);
+				var month = row.sendAt.substring(5, 7);
+				var day = row.sendAt.substring(8, 10);
+				var hour = row.sendAt.substring(11, 13);
+				var minute = row.sendAt.substring(14, 16);
+				//hour+":"+minute+" "
+				
+				if ( type === 'display') {
+					return (hour+":"+minute+"  "+day+"/"+month+"/"+year);
+				}
+		        return row.sendAt;}, "orderable": false, "width": "13%"},
+		],
+		"order": [],
+		"scrollY": "calc(100vh - 265px)",
+		"scrollCollapse": false,
+		"responsive": true,
+		"pageLength": length,
+	    "lengthChange" : false,
+	    "paging": false,
+	    "filter": false,
+	    "info": false
+	 
+	 });
+}
+
+function passInputData() {
+	
+	var searchElement = $('#searchField');
+	var startDateElement = $('#startDate');
+	var endDateElement = $('#endDate');
+	var receiverEmailElement = $('#filterReceiverEmail');
+	var senderEmailElement = $('#filterSenderEmail');
+	var hasAttachmentElement = $('#filterHasAttachment');
+	
+	
+	window.search = searchElement.val();					//change the global variables
+	window.senderEmail = senderEmailElement.val();
+	window.receiverEmail = receiverEmailElement.val();
+	window.hasAttachment = hasAttachmentElement.prop("checked");
+	window.startDate = startDateElement.val();
+	window.endDate = endDateElement.val();
+	
+	if (startDate != "") {
+		startDate += " 00:00:00";
+	}
+	
+	if (endDate != "") {
+		endDate += " 00:00:00";
+	}
+	
+}
+
+//Converting the filter parameters to string 
+function parametersToString(start, length, search, dateOrder, startDate, endDate, receiverEmail, senderEmail) {
+	var parameters = "start="+start+
+	"&"+encodeURIComponent("length")+"="+length+
+	"&"+encodeURIComponent("search")+"="+search+
+	"&"+encodeURIComponent("dateOrder")+"="+dateOrder+
+	"&startDate" + "="+startDate+
+	"&endDate" + "="+endDate+
+	"&"+encodeURIComponent("senderEmail")+"="+senderEmail+
+	"&"+encodeURIComponent("receiverEmail")+"="+receiverEmail+
+	"&"+encodeURIComponent("hasAttachment")+"="+hasAttachment+
+	"&draw="+3;
+	return parameters;
+}
+
+/* Pagination */
+var ulTag = $("#paginationInside");
+
+function createPaging(totalPages, page) {
+	var liTag = "";
+	var activeLi;
+	var beforePages = page - 1;
+	
+	if (beforePages == 0) {
+		beforePages = 1;
+	}
+	
+	var afterPages = 1 + page;
+	
+	if (afterPages >= totalPages) {
+		afterPages = totalPages;
+	}
+	
+	if (page > 1) {		/* if page value is greater than 1 add new li (prev button) */
+		liTag += "<li class = \"btn prev\"><span><i class = \"fas fa angel-left\"></i>Prev</span></li>";
+	}
+	if (page > 2) {
+		liTag += "<li class = \"numb\"><span>1</span></li>";
+		if (page > 3) {
+			liTag += "<li class = \"dots\"><span>...</span></li>"
+		}
+	}
+	
+	for (var pageLength = beforePages; pageLength <= afterPages; pageLength++) {
+		
+		
+		if (page == pageLength) {
+			activeLi = "active";
+		} else {
+			activeLi = "";
+		}
+		liTag += "<li class = \"numb "+activeLi+"\"><span>"+pageLength+"</span></li>";
+	}
+	
+	if (page < totalPages - 1) {
+		if (page < totalPages - 2) {
+			liTag += "<li class = \"dots\"><span>...</span></li>"
+		}
+		liTag += "<li class = \"numb\"><span>"+totalPages+"</span></li>";
+	}
+	
+	
+	if (page < totalPages) {		/* if page value is less than totalPages add new li (next button) */
+		liTag += "<li class = \"btn next\"><span>Next<i class = \"fas fa angel-right\"></i></span></li>";
+
+	}
+	ulTag.html(liTag);
+}
+
+
+$("#paginationInside").on('click', '.prev', function() {
+	if (currentPage != 1) {
+		currentPage = parseInt(currentPage) - parseInt(1);
+		
+		start = (parseInt(currentPage)-1)*length;
+		getAjaxData();
+	}
+});
+
+$("#paginationInside").on('click', '.numb', function() {
+	var number = $(this).children().text();
+	
+	if (currentPage != parseInt(number)) {
+		
+		currentPage = parseInt(number);
+		
+		start = (currentPage-1)*length;
+		getAjaxData();
+	}
+});
+
+$("#paginationInside").on('click', '.next', function() {
+	if (currentPage != 20) {
+		currentPage = parseInt(currentPage) + parseInt(1);
+		
+		start = (currentPage-1)*length;
+		getAjaxData();
+	}
+});
+
+
+function getCookie(name) {
+	  const value = `; ${document.cookie}`;
+	  const parts = value.split(`; ${name}=`);
+	  if (parts.length === 2) return parts.pop().split(';').shift();
+	}
+
+
+
+</script>
+
+
+</html>

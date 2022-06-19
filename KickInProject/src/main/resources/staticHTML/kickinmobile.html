@@ -1,0 +1,737 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title>Kick-In Database Explorer</title>
+	<link id = "mobiletype" rel="stylesheet" href="Style/CSS/stylesmobile.css">
+	<link rel="stylesheet" href="Style/CSS/loading.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+	<script src="https://kit.fontawesome.com/59dce4be9c.js" crossorigin="anonymous"></script>
+	<link href='https://css.gg/chevron-down.css' rel='stylesheet'>
+	<link rel="icon" href="/icon.svg" type="image/svg+xml">
+	
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/datetime/1.0.3/css/dataTables.dateTime.min.css">
+	
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+	
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.18.1/moment.min.js"></script>
+	<script src="https://cdn.datatables.net/datetime/1.0.3/js/dataTables.dateTime.min.js"></script>
+	
+	
+</head>
+
+<body>
+
+	<div id = "documentPreviewContainer">
+		<div id = "documenttitle"></div>
+		<div id = "readdocument">Tables</div>
+		<div id = "closebutton" title = "Close"><span id = "closestyle"><i class="fas fa-times fa-2x"></i></span></div>
+		<div id = "downloadbutton" title = "Download"><span id = "downloadstyle"><i class="fas fa-download fa-2x"></i></span></div>
+		<div id = "refreshbutton" title = "Refresh"><span id = "refreshstyle"><i class="fas fa-sync fa-2x"></i></span></div>
+		<div id = "readbutton" title = "Check who has read"><span id = "readstyle"><i class="fas fa-eye fa-2x"></i></span></div>
+	</div>
+	
+		<h1>Kick-In Database Explorer</h1>
+	
+		<div id = "credentials">
+			<div><div id = "name"><b>Name: </b>Kristiyan Longname Velikov</div></div>
+			<div><div id = "email"><b>E-mail: </b>Somethingsomething@gmail.com12345678</div></div>
+			<div><div id = "logout"><i class="fas fa-sign-out-alt"></i> Sign-out</div></div>
+			<div id = "credentialsIcon"><i class="fas fa-user-circle fa-3x" title ="Credentials information"></i></div>
+			<div id = "credentialsResponse">
+				<div><div id = "nameResponse"><b>Name: </b>Kristiyan Longname Velikov</div></div>
+				<div><div id = "emailResponse"><b>E-mail: </b>Somethingsomething@gmail.com</div></div>
+				<div><div id = "logoutResponse"><i class="fas fa-sign-out-alt"></i> sign-out</div></div>
+			</div>
+		</div>
+
+
+	<div id = "search">
+		<div class="wrap">
+   			<div class="search">
+   				<button id = "dropdownAdvancedFilter" title = "Advanced search filters"><i class="fas fa-caret-down" id ="iconAdvancedSearch"></i></button>
+      			<input id = "searchField" type="search" class="searchTerm" placeholder="What are you looking for?">
+      			<button id = "searchButton" type="submit" class="searchButton" title = "Search">
+        		<i class="fa fa-search"></i>
+     			</button>
+  		 	</div>
+		</div>
+	</div>
+	<div id = "advancedSearch">
+		<div id ="filterOrganisation" style = "padding: 0px">
+			<span>By organisation:  </span>
+			<input id  = "filterOrganisationField" list = "filterOrganisationList" placeholder = "- All organisations -" type = "search"></input>
+			<datalist id="filterOrganisationList">
+				<option value = "" selected="selected" style="color:grey"></option>
+			</datalist>
+		</div>
+		<div id = "date" style = "display: inline-grid">
+			<div id ="filterStartDate">
+				<div><span>Start date:  </span></div>
+							<!-- Founding year of Technische Hogeschool Twente(1961) -->
+				<div><input type="date" id="startDate" min='1961-01-01' max='2021-12-25' name="startDate">
+					<button id = "resetStartDate"><i class="fas fa-times"></i></button>
+				</div>
+			</div>
+			<div id ="filterEndDate">
+				<div><span>End date:  </span></div>
+				<div><input type="date" id="endDate" min='1961-01-01' max='2021-12-25' name="endDate">
+					<button id = "resetEndDate"><i class="fas fa-times"></i></button></div>
+			</div>
+		</div>
+		<div id = "filterEmail" style = "display: inline-grid">
+			<div id ="receiverEmail" style = "display: inline-block">
+				<div><span> Receiver: </span></div>
+				<div><input id ="filterReceiverEmail" type="search" placeholder="Enter email"></div>
+			</div>
+			<div id ="senderEmail" style = "display: inline-block">
+				<div><div style = "display: inline-block"><span> Sender: </span></div></div>
+				<div><div><input id ="filterSenderEmail" type="search"  placeholder="Enter email"></div></div>
+			</div>
+		</div>
+		<div id = "hasAttachment">
+			<label for = "filterHasAttachment">Has attachment: </label>
+			<input id ="filterHasAttachment" type="checkbox">
+		</div>
+	</div>
+	<div id = "emails">
+		<div class = "loadingio-spinner-double-ring-dw9h57zoghk"><div class="ldio-yhebgjchxv">
+			<div></div>
+			<div></div>
+			<div><div></div></div>
+			<div><div></div></div>
+			</div></div>
+		<table id="example" class="table table-striped table-bordered table-hover" style="width:100%">
+		    <thead>
+			    <tr>
+			      <th>Sender</th>
+			      <th>Subject</th>
+			      <th id = "dateOrder" title = "Sort by date">Date <i class="fas fa-sort-down"></i></th>
+			    </tr>
+		    </thead>
+	    </table>
+	    <div id = "info">
+    		<div id = "results">0 records out of 0</div>
+	    	<div id = "pagination">
+	    			<ul id = "paginationInside">
+	    			</ul>
+	    	</div>
+    	</div>
+    </div>
+    
+    
+</body>
+
+<script type="text/javascript">
+
+var ipAddress = '143.178.195.16';
+
+var dataTable;
+
+var start = 0;
+var length = 20;
+var search = "";
+var dateOrder = "desc";
+var organisationFilter = ""
+var startDate = "";
+var endDate = "";
+var receiverEmail = "";
+var senderEmail = "";
+var receiverEmail = "";
+var hasAttachment = false;
+
+var recordsTotal;
+var recordsFiltered;
+
+var totalPages;
+var currentPage = 1;
+
+
+//if (/Android|webOS|iPhone|iPad|iPod|BlackBerry|BB|PlayBook|IEMobile|Windows Phone|Kindle|Silk|Opera Mini/i.test(navigator.userAgent)) {
+    // Take the user to a different screen here.
+	//TODO mobile adaption
+//}
+$('#credentialsIcon').click(function() {
+	if ($('#credentialsResponse').css('display') == 'block') {
+		$('#credentialsResponse').css('display','none');
+	} else {
+		$('#credentialsResponse').css('display','block');
+	}
+});
+
+//Display the different filter options when the dropdown button is clicked
+$('#dropdownAdvancedFilter').click(function() {
+	  if ( $('#advancedSearch').css('visibility') == 'hidden' ) {
+		  $('#advancedSearch').css('visibility','visible');
+		  $('#dropdownAdvancedFilter').css('border-radius', '15px 0px 0px 0px');
+		  $('.searchButton').css('border-radius', '0 5px 0px 0');
+		  $('#iconAdvancedSearch').removeClass('fas fa-caret-down');
+		  $('#iconAdvancedSearch').addClass('fas fa-caret-up');
+	  }
+	  else {
+		  $('#advancedSearch').css('visibility','hidden');
+		  $('#dropdownAdvancedFilter').css('border-radius', '15px 0px 0px 15px');
+		  $('.searchButton').css('border-radius', '0 5px 5px 0');
+		  $('#iconAdvancedSearch').removeClass('fas fa-caret-up');
+		  $('#iconAdvancedSearch').addClass('fas fa-caret-down');
+	  }
+	  
+	});
+
+//Search button functionality which invokes the method for getting data
+$('#searchButton').click(function() {
+	
+	console.log(navigator.userAgent);
+	
+	window.currentPage = 1;
+	window.start = 0;
+	window.dateOrder = "desc";
+	
+	getAjaxData();
+	
+});
+
+
+
+//Set the max date that can be chosen to be todays date when the date filter is chosen
+$('#startDate').click(function() {
+	
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+ if(dd<10){
+        dd='0'+dd
+    } 
+    if(mm<10){
+        mm='0'+mm
+    } 
+
+today = yyyy+'-'+mm+'-'+dd;
+document.getElementById("startDate").setAttribute("max", today);
+	
+});
+
+$('#endDate').click(function() {
+	
+var today = new Date();
+var dd = today.getDate();
+var mm = today.getMonth()+1; //January is 0!
+var yyyy = today.getFullYear();
+ if(dd<10){
+        dd='0'+dd
+    } 
+    if(mm<10){
+        mm='0'+mm
+    } 
+
+today = yyyy+'-'+mm+'-'+dd;
+document.getElementById("endDate").setAttribute("max", today);
+	
+});
+
+
+$("input").on('keyup', function (e) {
+	//Number 13 is the "Enter" key on the keyboard
+	if (e.key === 'Enter' || e.keyCode === 13) {
+		// Trigger the button element with a click
+		document.getElementById("searchButton").click();
+	}
+});
+
+
+
+//Reset the date to dd/mm/yyyy when the resetdate button is clicked
+$('#resetStartDate').click(function(){
+	document.getElementById("startDate").valueAsDate = null;
+});
+
+$('#resetEndDate').click(function(){
+	document.getElementById("endDate").valueAsDate = null;
+});
+
+$(document).ready(function() {
+	
+	getAjaxData();
+	
+	 $("div.dataTables_filter").appendTo( $("#search") );
+	 
+	 $("div.dataTables_filter").keypress(function (e) {
+		var key = e.which;
+		if (key == 13) {
+			$('#searchIcon').click();
+		}
+	 });
+	 
+	 $("div.dataTables_filter").on('input', 'input', function () {
+		 
+		 var value = $(this).val();
+		 
+		 if (!value) {	 
+			 dataTable.search('').draw();
+		 }
+		 
+	 });
+	 
+	 
+	 $("#filterSenderEmail").on('change', function() {
+		 dataTable.columns(0).search(this.value);
+	 }) 
+	 
+	 
+	 
+	//When we click outside the advanced filter or the search bar - the advanced filter closes
+	$(document).click(function(e){
+	    var container = $("#advancedSearch");
+	    var icon = $("#iconAdvancedSearch");
+	    var button = $("#dropdownAdvancedFilter");
+	    var search = $("#example_filter");
+ 
+    // If the target of the click isn't the container
+    if ( (!container.is(e.target) && container.has(e.target).length === 0)
+    	&& ( !button.is(e.target) && button.has(e.target).length === 0 )
+    	&& ( !icon.is(e.target) && icon.has(e.target).length === 0) 
+    	&& ( !search.is(e.target) && search.has(e.target).length === 0) ) {
+        $('#advancedSearch').css('visibility','hidden');
+        $('#dropdownAdvancedFilter').css('border-radius', '15px 0px 0px 15px');
+        $('.searchButton').css('border-radius', '0 5px 5px 0');
+		$('#iconAdvancedSearch').removeClass('fas fa-caret-up');
+		$('#iconAdvancedSearch').addClass('fas fa-caret-down');
+    }
+	 
+ });
+	 
+	 
+ });
+ 
+//Display the document
+ var documenturl;
+ 
+ $("#dateOrder").on('click', function () {
+	 descIcon = '<i class="fas fa-sort-down"></i>';
+	 ascIcon = '<i class="fas fa-sort-up"></i>';
+	 
+	 if (dateOrder == "asc") {
+		 dateOrder = "desc"
+		 $(this).html("Date "+ descIcon);
+		 
+	 } else if (dateOrder == "desc") {
+		 dateOrder = "asc"
+		 $(this).html("Date "+ ascIcon);
+	 }
+	 
+	 getAjaxData();
+	 
+ });
+ 
+ 
+ $(document).on('click', '.attachment', function(e) {
+	 
+	 documenturl = $(this).attr('title');
+	 
+	 $("#documenttitle").html(documenturl);
+	 
+	 //split on . get last possition of array to get the type
+	 var type = documenturl.split(".").pop();
+	 
+	 if (type == "png" || type == "jpg" || type == "jpeg") {
+		 
+		 url = "http://"+ipAddress+":8080/kickInProject/rest/documents/"+documenturl;
+		 alt = "http://"+ipAddress+":8080/kickInProject/rest/documents/not_found.png"
+		 
+		 var picture = "<img id = \"embeddedpic\" = src = \""+url+"\" alt = \"image not found\" onerror = \"this.src=\'"+alt+"'\"></src>";
+		 
+		 $("#readdocument").after(picture);
+		 
+	 } else {		 
+		 url = "http://docs.google.com/gview?url=http://"+ipAddress+":8080/kickInProject/rest/documents/"+documenturl+"&embedded=true"; 
+		 
+		 //contains IpAddress
+		 var iframe = "<iframe id = \"embedded\" src=\""+ url + "\"frameborder=\"0\"><h1>Test</h1>Test</iframe>";
+		 
+		 $("#readdocument").after(iframe);
+	 }
+	 $("#documentPreviewContainer").css("visibility","visible");
+	 
+ });
+ 
+ //Close the deocument previewer 
+ $("#closebutton").on('click', function() {
+	 
+	 $("#documentPreviewContainer").css("visibility","hidden");
+	 
+	 $("#embedded").remove();
+	 $("#embeddedpic").remove();
+	 
+ });
+ 
+ //Download document functionality
+ $("#downloadbutton").on('click', function() {
+	 
+	 document.location.href = "http://"+ipAddress+":8080/kickInProject/rest/documents/" + documenturl;
+	 
+ });
+ 
+//Refresh document functionality
+ $("#refreshbutton").on('click', function() {
+	 
+	 previeurl = $("#embedded").attr("src");
+	 
+	 $("#embedded").attr("src", previeurl);
+	 
+ });
+ 
+
+ $("#readbutton").on('click', function() {
+	 
+		if ($("#readdocument").css('display') == 'block') {
+					$("#readdocument").css('display','none');
+				} else {
+					$("#readdocument").css('display','block')
+				}
+	 });
+
+
+ 
+$('#example').on('click', 'tbody tr', function (e) {
+	
+	var attachment = $(".attachment");
+	
+	 if (!attachment.is(e.target) && attachment.has(e.target).length === 0) {
+		 
+			var table = $("#example").DataTable();
+			var row = table.row($(this)).data();
+			
+			location.href = "http://"+ipAddress+":8080/kickInProject/rest/emails/" + row.id;
+		 
+	 }
+	
+	});
+
+
+var organisations;
+
+window.onload = function loadEmailObject() {
+    
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			
+			var response = xmlhttp.responseText;
+
+			organisations = JSON.parse(response);
+			
+			for (var i = 0; i < organisations.length; i++) {
+				var organisation = organisations[i];
+				$option = $('<option value = \'' + organisation + '\'>' + organisation + '</option>')
+				$("#filterOrganisationList").append( $option );
+			}
+			
+		}
+	};
+	
+	xmlhttp.open("GET","http://"+ipAddress+":8080/kickInProject/rest/emails/organisations/", true);
+	xmlhttp.send();
+	
+};
+
+//Get data from server, having in mind filters and pagination 
+function getAjaxData() {
+	$(".loadingio-spinner-double-ring-dw9h57zoghk").css("display","block");
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			
+			var response = xmlhttp.responseText;
+			var ajax = JSON.parse(response);
+			
+			recordsTotal = ajax.recordsTotal;
+			recordsFiltered = ajax.recordsFiltered;
+			
+			totalPages = (Math.ceil(recordsFiltered/length));
+			
+			if (totalPages == 0) {
+				totalPages = 1;
+			}
+			
+			var until = start+length;
+			
+			if ( (start+length) > (recordsFiltered) ) {
+				until = recordsFiltered;
+			}
+			
+			var info = "Showing " + (start+1) + " to " + until + " of <b>" + recordsFiltered + "</b> emails";
+			
+			if (recordsTotal != recordsFiltered) {
+				info += " (filtered from <b>" + recordsTotal + "</b>)";
+			}
+			
+			$("#results").html(info);
+			
+			createPaging(totalPages, currentPage);
+			
+			
+			if (!$.fn.DataTable.isDataTable($("#example")) ) {		//if the tables has not been created yet
+				createDataTable(ajax.data); 						// create it
+			} else {
+				dataTable.clear().rows.add(ajax.data).draw();
+			}
+			
+		}
+		
+		if (this.readyState == 4) {
+			
+			$(".loadingio-spinner-double-ring-dw9h57zoghk").css("display","none");
+			
+		}
+		
+	};
+	
+	passInputData();
+	var parameters = 
+			parametersToString(
+					start, length, search, dateOrder, organisationFilter, startDate, endDate, receiverEmail, senderEmail);
+	
+	xmlhttp.open("GET","http://"+ipAddress+":8080/kickInProject/rest/emails/kickincomittie?"+parameters, true);
+	xmlhttp.send();
+}
+
+function createDataTable(emails) {
+	var table = $("#example");
+	
+	dataTable = table.DataTable({
+		serverSide: false,		//we use our own implementation to satisfy the project requirments
+		data: emails,
+		"columns":[
+			{"data":"senderEmail", "orderable": false, "width": "22%"},
+			{"data": "null", "render": function ( data, type, row ) {
+				
+				var subject = "<label class = \"subjectText\">" + row.subject + "</label>";
+				var plainTextContent = jQuery(row.content).text().replace(/\s\s+/g, ' ');	
+				
+				
+				if (plainTextContent.length > 200) {
+					plainTextContent = plainTextContent.substr( 0, 200 ) + "..";
+				}
+				
+				var htmlSubjectAndContext = ("<div class = \"subjectColumn\">" + subject + " - " + plainTextContent) + "</div>";
+				
+				htmlAttachments = "<div class=\"allattachments\">";
+				
+				
+				var attachments = row.attachments;
+				var singleAttachment;
+				var type = "";
+				
+				if (attachments[0].title.length > 0) {
+					
+					for (var i = 0; i < attachments.length; i++) {
+						
+						singleAttachmentString = attachments[i].title + "." + attachments[i].type;
+						
+						if (attachments[i].type === "pdf") {
+							type = "<span style=\"color: red;\"> <i class=\"fas fa-file-pdf\"></i> </span>";
+						} else if (attachments[i].type === "pptx" || attachments[i].type === "ppt" ) {
+							type =  "<span style=\"color: orange;\"> <i class=\"fas fa-file-powerpoint\"></i> </span>";
+						} else if (attachments[i].type === "docx" || attachments[i].type === "doc" ) {
+							type =  "<span style=\"color: blue;\"> <i class=\"fas fa-file-word\"></i> </span>";
+						} else if (attachments[i].type === "png" || attachments[i].type === "jpg"
+								|| attachments[i].type === "jpeg" ) {
+							type =  "<span style=\"color: grey;\"> <i class=\"fas fa-file-image\"></i> </span>";
+						} else {
+							type = "<span style=\"color: grey;\"> <i class=\"fas fa-file\"></i> </span>";
+						}
+						
+						
+						htmlAttachments += "<div class=\"attachment\" title=\"" + singleAttachmentString + "\">"
+						+ type
+						+ singleAttachmentString
+						+ "</div>";
+					
+					}
+					
+				}
+				
+				htmlAttachments += "</div>";
+		        return (htmlSubjectAndContext + htmlAttachments);},
+		        
+		        "orderable": false, "width": "65%"},
+			{"data": "null", "render": function ( data, type, row ) {
+				
+				var year = row.sendAt.substring(2, 4);
+				var month = row.sendAt.substring(5, 7);
+				var day = row.sendAt.substring(8, 10);
+				var hour = row.sendAt.substring(11, 13);
+				var minute = row.sendAt.substring(14, 16);
+				//hour+":"+minute+" "
+				
+				if ( type === 'display') {
+					return (hour+":"+minute+"  "+day+"/"+month+"/"+year);
+				}
+		        return row.sendAt;}, "orderable": false, "width": "13%"},
+		],
+		"order": [],
+		"scrollY": "calc(100vh - 400px)",
+		"scrollCollapse": false,
+		"responsive": true,
+		"pageLength": length,
+	    "lengthChange" : false,
+	    "paging": false,
+	    "filter": false,
+	    "info": false
+	 
+	 });
+}
+
+function passInputData() {
+	
+	var searchElement = $('#searchField');
+	var startDateElement = $('#startDate');
+	var endDateElement = $('#endDate');
+	var organisationElement = $('#filterOrganisationField');
+	var receiverEmailElement = $('#filterReceiverEmail');
+	var senderEmailElement = $('#filterSenderEmail');
+	var hasAttachmentElement = $('#filterHasAttachment');
+	
+	
+	
+	window.search = searchElement.val();					//change the global variables
+	window.organisationFilter = organisationElement.val();
+	window.senderEmail = senderEmailElement.val();
+	window.receiverEmail = receiverEmailElement.val();
+	window.hasAttachment = hasAttachmentElement.prop("checked");
+	window.startDate = startDateElement.val();
+	window.endDate = endDateElement.val();
+	
+	 
+	if (window.organisationFilter == null) {
+		window.organisationFilter = "";
+	}
+	
+	
+	if (startDate != "") {
+		startDate += " 00:00:00";
+	}
+	
+	if (endDate != "") {
+		endDate += " 00:00:00";
+	}
+	
+}
+
+//Converting the filter parameters to string 
+function parametersToString(start, length, search, dateOrder, organisationFilter, startDate, endDate, receiverEmail, senderEmail) {
+	var parameters = "start="+start+
+	"&"+encodeURIComponent("length")+"="+length+
+	"&"+encodeURIComponent("search")+"="+search+
+	"&"+encodeURIComponent("dateOrder")+"="+dateOrder+
+	"&"+encodeURIComponent("organisation")+"="+organisationFilter+
+	"&startDate" + "="+startDate+
+	"&endDate" + "="+endDate+
+	"&"+encodeURIComponent("senderEmail")+"="+senderEmail+
+	"&"+encodeURIComponent("receiverEmail")+"="+receiverEmail+
+	"&"+encodeURIComponent("hasAttachment")+"="+hasAttachment+
+	"&draw="+3;
+	return parameters;
+}
+
+//Pagination
+var ulTag = $("#paginationInside");
+
+function createPaging(totalPages, page) {
+	var liTag = "";
+	var activeLi;
+	var beforePages = page - 1;
+	
+	if (beforePages == 0) {
+		beforePages = 1;
+	}
+	
+	var afterPages = 1 + page;
+	
+	if (afterPages >= totalPages) {
+		afterPages = totalPages;
+	}
+	
+	if (page > 1) {		//if page value is greater than 1 add new li (prev button)
+		liTag += "<li class = \"btn prev\"><span><i class = \"fas fa angel-left\"></i>Prev</span></li>";
+	}
+	if (page > 2) {
+		liTag += "<li class = \"numb\"><span>1</span></li>";
+		if (page > 3) {
+			liTag += "<li class = \"dots\"><span>...</span></li>"
+		}
+	}
+	
+	for (var pageLength = beforePages; pageLength <= afterPages; pageLength++) {
+		
+		
+		if (page == pageLength) {
+			activeLi = "active";
+		} else {
+			activeLi = "";
+		}
+		liTag += "<li class = \"numb "+activeLi+"\"><span>"+pageLength+"</span></li>";
+	}
+	
+	if (page < totalPages - 1) {
+		if (page < totalPages - 2) {
+			liTag += "<li class = \"dots\"><span>...</span></li>"
+		}
+		liTag += "<li class = \"numb\"><span>"+totalPages+"</span></li>";
+	}
+	
+	
+	if (page < totalPages) {		//if page value is less than totalPages add new li (next button)
+		liTag += "<li class = \"btn next\"><span>Next<i class = \"fas fa angel-right\"></i></span></li>";
+
+	}
+	ulTag.html(liTag);
+}
+
+
+$("#paginationInside").on('click', '.prev', function() {
+	if (currentPage != 1) {
+		currentPage -= 1;
+		
+		start = (currentPage-1)*length;
+		getAjaxData();
+	}
+});
+
+$("#paginationInside").on('click', '.numb', function() {
+	var number = $(this).children().text();
+	
+	if (currentPage != parseInt(number)) {
+		
+		currentPage = parseInt(number);
+		
+		start = (currentPage-1)*length;
+		getAjaxData();
+	}
+});
+
+$("#paginationInside").on('click', '.next', function() {
+	if (currentPage != 20) {
+		currentPage += 1;
+		
+		start = (currentPage-1)*length;
+		getAjaxData();
+	}
+});
+
+
+//Return true if on mobile device
+function mobileCheck() {		
+	  let check = false;
+	  (function(a){if(/(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|iris|kindle|lge |maemo|midp|mmp|mobile.+firefox|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows ce|xda|xiino/i.test(a)||/1207|6310|6590|3gso|4thp|50[1-6]i|770s|802s|a wa|abac|ac(er|oo|s\-)|ai(ko|rn)|al(av|ca|co)|amoi|an(ex|ny|yw)|aptu|ar(ch|go)|as(te|us)|attw|au(di|\-m|r |s )|avan|be(ck|ll|nq)|bi(lb|rd)|bl(ac|az)|br(e|v)w|bumb|bw\-(n|u)|c55\/|capi|ccwa|cdm\-|cell|chtm|cldc|cmd\-|co(mp|nd)|craw|da(it|ll|ng)|dbte|dc\-s|devi|dica|dmob|do(c|p)o|ds(12|\-d)|el(49|ai)|em(l2|ul)|er(ic|k0)|esl8|ez([4-7]0|os|wa|ze)|fetc|fly(\-|_)|g1 u|g560|gene|gf\-5|g\-mo|go(\.w|od)|gr(ad|un)|haie|hcit|hd\-(m|p|t)|hei\-|hi(pt|ta)|hp( i|ip)|hs\-c|ht(c(\-| |_|a|g|p|s|t)|tp)|hu(aw|tc)|i\-(20|go|ma)|i230|iac( |\-|\/)|ibro|idea|ig01|ikom|im1k|inno|ipaq|iris|ja(t|v)a|jbro|jemu|jigs|kddi|keji|kgt( |\/)|klon|kpt |kwc\-|kyo(c|k)|le(no|xi)|lg( g|\/(k|l|u)|50|54|\-[a-w])|libw|lynx|m1\-w|m3ga|m50\/|ma(te|ui|xo)|mc(01|21|ca)|m\-cr|me(rc|ri)|mi(o8|oa|ts)|mmef|mo(01|02|bi|de|do|t(\-| |o|v)|zz)|mt(50|p1|v )|mwbp|mywa|n10[0-2]|n20[2-3]|n30(0|2)|n50(0|2|5)|n7(0(0|1)|10)|ne((c|m)\-|on|tf|wf|wg|wt)|nok(6|i)|nzph|o2im|op(ti|wv)|oran|owg1|p800|pan(a|d|t)|pdxg|pg(13|\-([1-8]|c))|phil|pire|pl(ay|uc)|pn\-2|po(ck|rt|se)|prox|psio|pt\-g|qa\-a|qc(07|12|21|32|60|\-[2-7]|i\-)|qtek|r380|r600|raks|rim9|ro(ve|zo)|s55\/|sa(ge|ma|mm|ms|ny|va)|sc(01|h\-|oo|p\-)|sdk\/|se(c(\-|0|1)|47|mc|nd|ri)|sgh\-|shar|sie(\-|m)|sk\-0|sl(45|id)|sm(al|ar|b3|it|t5)|so(ft|ny)|sp(01|h\-|v\-|v )|sy(01|mb)|t2(18|50)|t6(00|10|18)|ta(gt|lk)|tcl\-|tdg\-|tel(i|m)|tim\-|t\-mo|to(pl|sh)|ts(70|m\-|m3|m5)|tx\-9|up(\.b|g1|si)|utst|v400|v750|veri|vi(rg|te)|vk(40|5[0-3]|\-v)|vm40|voda|vulc|vx(52|53|60|61|70|80|81|83|85|98)|w3c(\-| )|webc|whit|wi(g |nc|nw)|wmlb|wonu|x700|yas\-|your|zeto|zte\-/i.test(a.substr(0,4))) check = true;})(navigator.userAgent||navigator.vendor||window.opera);
+	  return check;
+	};
+
+</script>
+
+
+</html>

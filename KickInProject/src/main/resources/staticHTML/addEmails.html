@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>New communications</title>
+	<link rel="stylesheet" href="../../Style/CSS/addEmails.css">
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+	
+	
+	<script src="https://kit.fontawesome.com/59dce4be9c.js" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src = "https://cdn.jsdelivr.net/npm/sweetalert2@7.26.9/dist/sweetalert2.all.min.js"></script>
+	
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/limonte-sweetalert2/11.0.18/sweetalert2.css" integrity="sha512-DYOwgMAsSbNzrSwEU3nQ7bcYo5aEqpIq1lOe5doeuUwXjuFYjIPvIZDZrEOH+QMIXvRpqcc8gPKcoIMIyAZMCg==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+</head>
+<body>
+	<div class = "header row">
+		<div class = col-2><div id = "back"><i class="fas fa-arrow-circle-left"></i><span> Back</span></div></div>
+		<div class = col-8><h1>Kick-In Database Explorer</h1></div>
+		<div class = col-2 id = "blank"></div>
+	</div>
+	<div id = "credentials">
+		<div><div id = "name"><b>Name: </b></div></div>
+		<div><div id = "email"><b>E-mail: </b></div></div>
+		<div><div id = "logout"><i class="fas fa-sign-out-alt"></i> Sign-out</div></div>
+		<div id = "credentialsIcon"><i class="fas fa-user-circle fa-3x" title ="Credentials information"></i></div>
+		<div id = "credentialsResponse">
+			<div><div id = "nameResponse"><b>Name: </b></div></div>
+			<div><div id = "emailResponse"><b>E-mail: </b></div></div>
+			<div><div id = "logoutResponse"><i class="fas fa-sign-out-alt"></i> sign-out</div></div>
+		</div>
+	</div>
+
+	<div class = "typeContainer">
+		<div class = "addType addTypeClicked" id = "newEmail"><i class="fas fa-plus fa-sm"></i><i class="fas fa-envelope-square"></i>Email</div>
+		<div class = "addType" id = "newPerson"><i class="fas fa-plus fa-sm"></i><i class="fas fa-user"></i>Person</div>
+		<div class = "addType" id = "newOrg"><i class="fas fa-plus fa-sm"></i><i class="fas fa-users"></i>Organisation</i></div>
+		<div class = "addType" id = "newDocument"><i class="fas fa-plus fa-sm"></i><i class="fas fa-file"></i>Document</i></div>
+	</div>
+
+	<div class = "main" id = "EmailForm">
+		<form method = "post" action = "../upload/email">
+			<div class="inputRow">
+				<div id ="filterOrganisation" class = "input" style = "padding: 0px">
+					<input name = "receiver" id = "listReciever" list = "organisations" type = "search" style="width: 100%">
+					<label>Receiver</label>
+					<div style="display: flex; flex-direction: column;">
+						<div id = "orgType" class = "recieverType recieverSelected"><i class="fas fa-users"></i></div>
+						<div id = "persType" class = "recieverType "><i class="fas fa-user"></i></div>
+					</div>
+					<datalist id="organisations">
+					</datalist>
+					<datalist id="people">
+					</datalist>
+				</div>
+
+				<div class = "input" id = "subject">
+					<input name = "subject" type = "text" required>
+					<label>Subject</label>
+					<span></span>
+				</div>
+			</div>
+			<div class="inputRow">
+				<div class = "input">
+					<input name = "sender" type = "text" required>
+					<label>Sender</label>
+					<span></span>
+				</div>
+
+				<div class = "input">
+					<input name = "senderEmail" type = "email" required>
+					<label>Sender Email</label>
+					<span></span>
+				</div>
+			</div>
+			<div class = "input">
+				<input name = "content" type = "text" required>
+				<label>Content</label>
+				<span></span>
+			</div>
+
+			<div name = "date" class = "input" style="border: none;">
+				<input type="datetime-local" id="datetime" min='1961-01-01T00:00' max='2021-12-25T00:00' name="date">
+				<label>Date</label>
+				<span></span>
+			</div>
+
+			<div class = "button">
+				<input type = "submit" value="Submit" id = "submitEmail">
+			</div>
+		</form>
+	</div>
+
+	<div class = "main" id = "PersonForm" style="display: none;">
+		<form method = "post" action = "../upload/person">
+
+			<div class = "input" style = "padding: 0px">
+				<input name = "organisation" list = "organisations" type = "search" style="width: 100%">
+				<label>Organisation</label>
+				<datalist id="organisations">
+				</datalist>
+			</div>
+
+
+			<div class="inputRow">
+				<div class = "input">
+					<input name = "name" type = "text" required>
+					<label>Name</label>
+					<span></span>
+				</div>
+
+				<div class = "input">
+					<input name = "email" type = "email" required>
+					<label>Email</label>
+					<span></span>
+				</div>
+			</div>
+
+			<div class = "button">
+				<input type = "submit" value="Submit" id = "submitPerson">
+			</div>
+		</form>
+	</div>
+
+	<div class = "main" id = "OrganisationForm" style="display: none;">
+		<form method = "post" action = "../upload/organisation">
+
+			<div class = "input">
+				<input name = "organisation" type = "text" required>
+				<label>Organisation Name</label>
+				<span></span>
+			</div>
+
+			<div class = "button">
+				<input type = "submit" value="Submit" id = "submitOrganisation">
+			</div>
+		</form>
+	</div>
+	
+	<div class = "main" id = "DocumentForm" style="display: none;">
+		<form method = "post">
+
+			<div class = "input">
+				<input class="form-control" type="file" id="files" required/>
+				<label id = "attachLabel">Document</label>
+				<span></span>
+			</div>
+
+			<div class = "button">
+				<input type = "submit" value="Submit" id = "submitOrganisation">
+			</div>
+		</form>
+	</div>
+
+</body>
+
+
+<script type="text/javascript">
+
+var host = location.origin;
+
+var error = 0;
+var success = 0;
+
+$( document ).ready(function() {
+	
+	if (error != 0) {
+		
+		Swal.fire({
+			  icon: 'error',
+			  title: 'Oops...',
+			  text: error,
+			})
+		
+	} else if (success == "done"){
+		
+		Swal.fire(
+				  'Success',
+				  'Database updated!',
+				  'success'
+				)
+		
+	}
+	
+	
+	
+	$('#logout').on('click', function() {
+		//link to logout endpoint
+		location.href = host+"/kickInProject/rest/logout";
+	});
+
+	$('#newCommunicationResponse').on('click', function() {
+		location.href = host+"/kickInProject/rest/main/new";
+	});
+	
+	 $("#back").on('click', function() {
+		 location.href = host+"/kickInProject/rest/main";
+		
+	 });
+	
+	$("#addAttachment").on('click', function() {
+		var newAttachment = $("#attachment").clone();
+		newAttachment.find("input").val("");
+		newAttachment.find("label").remove();
+		newAttachment.find("#removeAttachment").css("visibility", "visible");
+		newAttachment.insertBefore("#addAttachment");
+	});
+	
+	$(document).on('click', '#removeAttachment', function() {
+		
+		console.log($(this).parent());
+		$(this).parent().parent().parent().remove();
+		
+	});
+	
+	var userInfo;
+	
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			
+			if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+				document.location.href = this.responseURL;
+				
+			}
+			
+			var response = xmlhttp.responseText;
+
+			userInfo = JSON.parse(response);
+			
+			var userName = userInfo.name;
+			var userEmail = userInfo.email;
+			
+			$("#name").text("Name: " + userName);
+			$("#nameResponse").text("Name: " + userName);
+			$("#email").text("Email: " + userEmail);
+			$("#emailResponse").text("Email: " + userEmail);
+			
+		}
+	};
+	
+	xmlhttp.open("GET",host+"/kickInProject/rest/userInfo", true);
+	xmlhttp.send();
+	
+	
+	getOrganisationList();
+	getPeopleList();
+	getDocumentsList();
+	
+    $(".addType").on('click', function() {
+
+    	($(".addType")).removeClass("addTypeClicked");
+    	($(this)).addClass("addTypeClicked");
+
+    	$(".main").css("display", "none");
+
+    	if (($(this)).text()=="Email") {
+    		$("#EmailForm").css("display", "block");
+    		getOrganisationList();
+    		getDocumentsList();
+    	} else if (($(this)).text()=="Person") {
+    		$("#PersonForm").css("display", "block");
+    		getOrganisationList();
+    	} else if (($(this)).text()=="Organisation") {
+    		$("#OrganisationForm").css("display", "block");
+    	} else if (($(this)).text()=="Document") {
+    		$("#DocumentForm").css("display", "block");
+    	}
+    });
+
+    $(".recieverType").on('click', function() {
+    	
+    	$(".recieverType").removeClass("recieverSelected");
+    	($(this)).addClass("recieverSelected");
+    	
+    	if (($(this)).attr("id") == "orgType") {
+    		($("#listReciever")).attr("list", "organisations");
+    		getPeopleList ();
+    	}
+    	
+    	if (($(this)).attr("id") == "persType") {
+    		($("#listReciever")).attr("list", "people");
+    		getDocumentsList ();
+    	}
+    	
+    });
+    
+    
+});
+
+var organisations;
+
+function getOrganisationList () {
+	
+	var xmlhttporg = new XMLHttpRequest();
+	xmlhttporg.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			
+			if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+				location.href = this.responseURL;	
+			}
+			
+			var response = xmlhttporg.responseText;
+
+			organisations = JSON.parse(response);
+			$("#organisations").html("");
+			for (var i = 0; i < organisations.length; i++) {
+				var organisation = organisations[i];
+				$option = $('<option value = \'' + organisation + '\'>' + organisation + '</option>');
+				$("#organisations").append( $option );
+			}
+			
+		}
+	};
+	
+	xmlhttporg.open("GET", host+"/kickInProject/rest/emails/organisations", true);
+	xmlhttporg.send();
+	
+}
+
+var people;
+
+function getPeopleList () {
+	
+	var xmlhttpeople = new XMLHttpRequest();
+	xmlhttpeople.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			
+			if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+				location.href = this.responseURL;	
+			}
+			
+			var response = xmlhttpeople.responseText;
+
+			people = JSON.parse(response);
+			$("#people").html("");
+			for (var i = 0; i < people.length; i++) {
+				var person = people[i];
+				$option = $('<option value = \'' + person + '\'>' + person + '</option>');
+				$("#people").append( $option );
+			}
+			
+		}
+	};
+	
+	xmlhttpeople.open("GET", host+"/kickInProject/rest/emails/people", true);
+	xmlhttpeople.send();
+	
+}
+
+var documents;
+
+function getDocumentsList () {
+	
+	var xmlhttdocuments = new XMLHttpRequest();
+	xmlhttdocuments.onreadystatechange = function() {
+		if(this.readyState == 4 && this.status == 200) {
+			
+			if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+				location.href = this.responseURL;	
+			}
+			
+			var response = xmlhttdocuments.responseText;
+
+			documents = JSON.parse(response);
+			$("#documents").html("");
+			for (var i = 0; i < documents.length; i++) {
+				if (!(documents == ".")) {
+					var document = documents[i];
+					$option = $('<option value = \'' + document + '\'>' + document + '</option>');
+					$("#documents").append( $option );
+				}
+			}
+			
+		}
+	};
+	
+	xmlhttdocuments.open("GET", host+"/kickInProject/rest/emails/documents", true);
+	xmlhttdocuments.send();
+	
+}
+
+
+</script>
+</html>

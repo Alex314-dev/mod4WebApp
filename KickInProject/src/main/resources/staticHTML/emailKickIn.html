@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<title></title>
+	<link rel="stylesheet" href="../../../Style/CSS/emails.css">
+	<link rel="stylesheet" href="../../../Style/CSS/loading.css">
+	
+	<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.2/css/bootstrap.css">
+	<link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.24/css/dataTables.bootstrap4.min.css">
+	
+	<script src="https://kit.fontawesome.com/59dce4be9c.js" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.24/js/jquery.dataTables.min.js"></script>
+	<script src="https://cdn.datatables.net/1.10.24/js/dataTables.bootstrap4.min.js"></script>
+	
+</head>
+
+<body>
+
+	<div id = "documentPreviewContainer">
+		<div id = "documenttitle"></div>
+		<div id = "readdocument">
+			<table id = "readDocTable">
+				<thead>
+					<tr>
+						<th>Read by</th>
+						<th>Date</th>
+					</tr>
+				</thead>
+			</table>
+		</div>
+		<div id = "closebutton" title = "Close"><span id = "closestyle"><i class="fas fa-times fa-2x"></i></span></div>
+		<div id = "downloadbutton" title = "Download"><span id = "downloadstyle"><i class="fas fa-download fa-2x"></i></span></div>
+		<div id = "refreshbutton" title = "Refresh"><span id = "refreshstyle"><i class="fas fa-sync fa-2x"></i></span></div>
+		<div id = "readbutton" title = "Check who has read"><span id = "readstyle"><i class="fas fa-eye fa-2x"></i></span></div>
+	</div>
+	
+	<div class = "header row">
+		<div class = col-2><div id = "back"><i class="fas fa-arrow-circle-left"></i><span> Back</span></div></div>
+		<div class = col-8><h1>Kick-In Database Explorer</h1></div>
+		<div class = col-2 id = "blank"></div>
+	</div>
+	<div id = "credentials">
+		<div><div id = "name"><b>Name: </b></div></div>
+		<div><div id = "email"><b>E-mail: </b></div></div>
+		<div><div id = "logout"><i class="fas fa-sign-out-alt"></i> Sign-out</div></div>
+		<div id = "credentialsIcon"><i class="fas fa-user-circle fa-3x" title ="Credentials information"></i></div>
+		<div id = "credentialsResponse">
+			<div><div id = "nameResponse"><b>Name: </b></div></div>
+			<div><div id = "emailResponse"><b>E-mail: </b></div></div>
+			<div><div id = "logoutResponse"><i class="fas fa-sign-out-alt"></i> sign-out</div></div>
+		</div>
+	</div>
+	
+	
+	<div id = "container">
+		<div class = "info row">
+			<div class = col-12><h1 id = subject></h1></div>
+			<div class = col-6> 
+				<div><div id = sender><b>Sender: </b></div></div>
+				<div><div id = receiver><b>Receiver: </b> </div></div>
+			</div>
+			<div class = col-6 style = "text-align: right">
+				<div><div id = date><b>Date: </b></div></div>
+				<div>
+					<div id = "goToRead" title = "check who has read"><i class="fas fa-eye fa-lg"></i></div>
+					<div id = scrolltoattachments title = "go to attachments"><i class="fas fa-paperclip fa-lg"> </i></div>
+				</div>
+			</div>
+		</div>
+		<div id = "whoRead">
+			<div id = "emailName">
+				<table id = "readTable">
+					<thead>
+						<tr>
+							<th>Read by</th>
+							<th>Date</th>
+						</tr>
+					</thead>
+				</table>
+			</div>
+		</div>
+		<div id = "emailContent"></div>
+			<span style = "margin: 15px; font-size: 24px; font-weight: 700">Attachments:</span>
+		<div id = "emailAttachment"></div>
+		<div id = "returnTop" title = "Return to the top"><i class="fas fa-chevron-circle-up fa-2x"></i></div>
+	</div>
+	
+	<div class = "loadingio-spinner-double-ring-dw9h57zoghk"><div class="ldio-yhebgjchxv">
+	<div></div>
+	<div></div>
+	<div><div></div></div>
+	<div><div></div></div>
+	</div></div>
+    
+</body>
+
+
+<script type="text/javascript">
+
+	var host = location.origin;
+	
+	var emailid = 0;
+	
+	$('#credentialsIcon').click(function() {
+		if ($("#credentialsResponse").css('display') == 'block') {
+			$("#credentialsResponse").css('display','none');
+		} else {
+			$("#credentialsResponse").css('display','block')
+		}
+	});
+	
+	$('#logout').on('click', function() {
+		//link to logout endpoint
+		sessionStorage.clear();
+		location.href = host+"/kickInProject/rest/logout";
+	});
+
+	$('#logoutResponse').on('click', function() {
+		//link to logout endpoint
+		sessionStorage.clear();
+		location.href = host+"/kickInProject/rest/logout";
+	});
+
+	$('#newCommunication').on('click', function() {
+		location.href = host+"/kickInProject/rest/main/new";
+	});
+
+	$('#newCommunicationResponse').on('click', function() {
+		location.href = host+"/kickInProject/rest/main/new";
+	});
+
+	function eraseCookie(name) {   
+	    document.cookie = name+'=; Max-Age=-99999999;';  
+	}
+	
+	
+	window.onload = function loadEmailObject() {
+	    
+		$(".loadingio-spinner-double-ring-dw9h57zoghk").css("display","block");
+		var xmlhttpcontent = new XMLHttpRequest();
+		xmlhttpcontent.onreadystatechange = function() {
+			if(this.readyState == 4 && this.status == 200) {
+				
+				if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+					location.href = this.responseURL;
+					
+				}
+				
+				var response = xmlhttpcontent.responseText;
+				
+				var email = JSON.parse(response);
+				
+				document.title = email.subject;
+				document.getElementById("subject").innerHTML += email.subject;
+				
+				document.getElementById("emailContent").innerHTML += email.content;
+				
+				document.getElementById("emailContent").innerHTML += email.content;
+				
+				document.getElementById("sender").innerHTML += email.sender;
+				document.getElementById("sender").innerHTML += " (" + email.senderEmail + ")";
+				
+				document.getElementById("date").innerHTML += email.sendAt;
+				document.getElementById("receiver").innerHTML += email.receiver;
+				
+				
+				if (email.attachments[0].title == "" && email.attachments[0].type == "") {
+					document.getElementById("scrolltoattachments").innerHTML += 0;
+					document.getElementById("emailAttachment").innerHTML += "<i>There are no attachments in this email</i>";
+				} else {
+					document.getElementById("scrolltoattachments").innerHTML += email.attachments.length;
+					displayAttachments(email.attachments);
+				}
+				
+			}
+			if (this.readyState == 4) {
+				$(".loadingio-spinner-double-ring-dw9h57zoghk").css("display","none");
+			}
+		};
+		
+		
+		xmlhttpcontent.open("GET",host+"/kickInProject/rest/emails/content/" + emailid, true);
+		xmlhttpcontent.send();
+		
+	};
+	
+	function displayAttachments(arrayOfAttachments) {
+		
+		for (var i = 0; i < arrayOfAttachments.length; i++) {
+			
+			var attachment = arrayOfAttachments[i];
+			var icon;
+			var singleAttachmentString = attachment.title + "." + attachment.type;
+			
+			if (attachment.type === "pdf") {
+				icon = "<span style=\"color: red;\"> <i class=\"fas fa-file-pdf fa-2x\"></i> </span>";
+			} else if (attachment.type === "pptx" || attachment.type === "ppt" ) {
+				icon =  "<span style=\"color: orange;\"> <i class=\"fas fa-file-powerpoint fa-2x\"></i> </span>";
+			} else if (attachment.type === "docx" || attachment.type === "doc" ) {
+				icon =  "<span style=\"color: blue;\"> <i class=\"fas fa-file-word fa-2x\"></i> </span>";
+			} else if (attachment.type === "png" || attachment.type === "jpg"
+					|| attachment.type === "jpeg" ) {
+				icon =  "<span style=\"color: grey;\"> <i class=\"fas fa-file-image fa-2x\"></i> </span>";
+			} else {
+				icon = "<div id = icon><span style=\"color: grey;\"> <i class=\"fas fa-file fa-2x\"></i> </span></div>";
+			}
+			
+			
+			
+			var htmlAttachment = "<div id = attachment title=\"" + singleAttachmentString + "\">"
+			+ "<div class = attachemnticon>" + icon + "</div>"
+			+ "<div class = attachmenttext>" + singleAttachmentString + "</div>"
+			+ "</div>";
+			
+			document.getElementById("emailAttachment").insertAdjacentHTML('beforeend', htmlAttachment);
+			
+		}
+		
+	}
+	
+	$(document).ready(function() {
+		
+		var userInfo;
+		
+		var xmlhttp = new XMLHttpRequest();
+		xmlhttp.onreadystatechange = function() {
+			if(this.readyState == 4 && this.status == 200) {
+				
+				if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+					location.href = this.responseURL;
+					
+				}
+				
+				var response = xmlhttp.responseText;
+
+				userInfo = JSON.parse(response);
+				
+				var userName = userInfo.name;
+				var userEmail = userInfo.email;
+				
+				$("#name").text("Name: " + userName);
+				$("#nameResponse").text("Name: " + userName);
+				$("#email").text("Email: " + userEmail);
+				$("#emailResponse").text("Email: " + userEmail);
+				
+			}
+		};
+		
+		xmlhttp.open("GET",host+"/kickInProject/rest/userInfo", true);
+		xmlhttp.send();
+		
+		var emailId = location.href.substring(location.href.lastIndexOf('/') + 1);
+		var datatableReadEmail;
+		
+		var xmlhttpRead = new XMLHttpRequest();
+		xmlhttpRead.onreadystatechange = function() {
+			if(this.readyState == 4 && this.status == 200) {
+				
+				if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+					location.href = this.responseURL;
+					
+				}
+				
+				var response = xmlhttpRead.responseText;
+
+				getReadEmail = JSON.parse(response);
+				
+				datatableReadEmail = $('#readTable').DataTable( {
+					 data: getReadEmail,
+					 columns: [
+						 {data: "personEmail"},
+						{"data": "null", "render": function ( data, type, row ) {
+							
+							if (row.date == "" || row.date == null) {
+								return "";
+							}
+							
+							date = row.date.split("T")[0];
+							time = row.date.split("T")[1].substring(0, 5);
+							
+							return date+" "+time;} }
+					 ],
+					 "scrollY": "calc(100vh - 265px)", //check if need to be different
+					 "scrollCollapse": true,
+					 "pageLength": 20,
+					 "lengthChange": false,
+					 "paging": false,
+				 });
+				
+			}
+		};
+		
+		xmlhttpRead.open("GET",host+"/kickInProject/rest/emails/readcontent/"+emailId, true);
+		xmlhttpRead.send();
+		
+		 
+		$("#scrolltoattachments").click(function() {
+			    $('#container').animate({
+			        scrollTop: $("#emailAttachment").offset().top
+			    }, 350);
+			});
+
+		$("#goToRead").click(function() {
+			if ($("#whoRead").css('display') == 'block') {
+				$("#whoRead").css('display','none');
+			} else {
+				$("#whoRead").css('display','block')
+			}
+			
+			datatableReadEmail.columns.adjust().draw();
+			
+		});
+		
+		$("#returnTop").on('click', function() {
+		    $('#container').animate({
+		        scrollTop: $(".info").offset().top
+		    }, 350);
+		});
+		
+		var documenturl;
+		
+		 $(document).on('click', '#attachment', function() {
+			 
+			 documenturl = $(this).attr('title');
+			 
+				var xmlhttpReaddoc = new XMLHttpRequest();
+				xmlhttpReaddoc.onreadystatechange = function() {
+					if(this.readyState == 4 && this.status == 200) {
+						
+						console.log(this.responseURL);
+						
+						if ( this.responseURL.endsWith("kickInProject/LoginPage.html") ) {
+							location.href = this.responseURL;
+							
+						}
+						
+						var response = xmlhttpReaddoc.responseText;
+						
+						getReadDoc = JSON.parse(response);
+						
+						console.log(getReadDoc);
+						
+						if (!$.fn.DataTable.isDataTable($("#readDocTable")) ) {
+							
+							datatableDoc = $('#readDocTable').DataTable( {
+								 data: getReadDoc,
+								 columns: [
+									 {data: "personEmail", width: "50%"},
+									{"data": "null", "render": function ( data, type, row ) {
+										
+										if (row.date == "" || row.date == null) {
+											return "";
+										}
+										
+										date = row.date.split("T")[0];
+										time = row.date.split("T")[1].substring(0, 5);
+										
+										return date+" "+time;} }
+								 ],
+								 "scrollY": "calc(100vh - 265px)", //check if need to be different
+								 "scrollCollapse": true,
+								 "border-collapse": "collapse",
+								 "pageLength": 20,
+								 "lengthChange": false,
+								 "paging": false,
+							 });
+							
+						} else {
+							
+							datatableDoc.clear().rows.add(getReadDoc).draw();
+							
+						}
+						
+						
+					} 
+				};
+				
+				xmlhttpReaddoc.open("GET",host+"/kickInProject/rest/documents/readdoc/"+documenturl, true);
+				xmlhttpReaddoc.send();
+			 
+			 $("#documenttitle").html(documenturl);
+			 var type = documenturl.split(".").pop();
+			 
+			 documenturl += "?"+(document.cookie);//append the token as query parrameter
+			 									  //so we can preview the document with google preview
+			 
+			 /* split on . get last possition of array to get the type */
+			 
+			 if (type == "png" || type == "jpg" || type == "jpeg") {
+				 
+				 url = host+"/kickInProject/rest/documents/"+documenturl;
+				 alt = host+"/kickInProject/rest/documents/not_found.png?"+(document.cookie);
+				 
+				 var picture = "<img id = \"embeddedpic\" = src = \""+url+"\" alt = \"image not found\" onerror = \"this.src=\'"+alt+"'; this.onerror = null\"></src>";
+				 
+				 $("#readdocument").after(picture);
+				 
+			 } else {
+				 url = "http://docs.google.com/gview?url="+host+"/kickInProject/rest/documents/"+documenturl+"&embedded=true"; 
+				 
+				 var iframe = "<iframe id = \"embedded\" src=\""+ url + "\"frameborder=\"0\"><h1>Test</h1>Test</iframe>";
+				 
+				 $("#readdocument").after(iframe);
+			 }
+			 $("#documentPreviewContainer").css("visibility","visible");
+			 
+		 });
+		 
+		 $("#closebutton").on('click', function() {
+			 
+			 $("#documentPreviewContainer").css("visibility","hidden");
+			 
+			 $("#embedded").remove();
+			 $("#embeddedpic").remove();
+			
+		 });
+		 
+		 $("#downloadbutton").on('click', function() {
+			 
+			 document.location.href = host+"/kickInProject/rest/documents/" + documenturl;
+			 
+		 });
+		 
+		 $("#refreshbutton").on('click', function() {
+			 
+			 previeurl = $("#embedded").attr("src");
+			 
+			 $("#embedded").attr("src", previeurl);
+			 
+		 });
+		 
+		 $("#readbutton").on('click', function() {
+			 
+				if ($("#readdocument").css('display') == 'block') {
+							$("#readdocument").css('display','none');
+						} else {
+							$("#readdocument").css('display','block')
+						}
+				datatableDoc.columns.adjust().draw();
+			 });
+		 
+		 $("#back").on('click', function() {
+			document.location.href = host+"/kickInProject/rest/main";
+			
+		 });
+		 
+		 $(document).on('load', '#embedded', function() {
+			alert("test");
+		});
+		 
+	});
+	
+	/*When we click outside the credential icon the credentials container closes*/
+	$(document).click(function(e) {
+	    	var profileIcon = $("#credentialsIcon");
+	    	var profileContainer = $("#credentialsResponse");
+			/* If the target of the click isn't the container */
+			if ( (!profileIcon.is(e.target) && profileIcon.has(e.target).length === 0)
+				&& (!profileContainer.is(e.target) && profileContainer.has(e.target).length === 0) ) {
+				
+				$('#credentialsResponse').css('display','none');
+			}
+
+	 });
+	
+</script>
+
+</html>

@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<title>Kick-in login page</title>
+		<link rel="stylesheet" href="Style/CSS/loginstyle.css">
+		<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	</head>
+	<body>
+		<header>
+		</header>
+		<div class = "main">
+			<div class = "logo">
+				<img src="Style/Images/logo.png">
+				<h2>Database Explorer</h2>
+			</div>
+			
+			<div class = "button">
+				<input id = "button" type = "submit" value="Login" id = "sendLogIn">
+			</div>
+		</div>
+	
+	<script>
+	
+	$( document ).ready(function() {
+		
+		$("#button").on('click', function () {
+			
+			$(".button").on('click', function(e) {
+				
+				var client_id = "0oaq4qsacgNHrCPaS5d6";
+				var redirect_uri = document.location.origin+"/kickInProject/rest/auth";
+				var scope = "openid profile";
+				var response_type = "code"
+				var response_mode = "form_post";
+				var state = (Math.random() * 10) + 1;
+				var nonce = generateNonce();
+				
+				//http://localhost:8080/onlineStore/code
+				//https://oauthdebugger.com/debug
+				
+				var params = parametersToString (client_id, redirect_uri, scope, response_type, response_mode, state, nonce);
+				
+				window.location.href = "https://dev-63893740.okta.com/oauth2/default/v1/authorize/?" + params;
+				
+			});
+			
+		});
+		
+		function parametersToString (client_id, redirect_uri, scope, response_type, response_mode, state, nonce) {
+		parameters = encodeURIComponent("client_id")+"="+client_id+
+		"&"+encodeURIComponent("redirect_uri")+"="+redirect_uri+
+		"&"+encodeURIComponent("scope")+"="+scope+
+		"&"+encodeURIComponent("response_type")+"="+response_type+
+		"&"+encodeURIComponent("response_mode")+"="+response_mode+
+		"&"+encodeURIComponent("state")+"="+state+
+		"&"+encodeURIComponent("nonce")+"="+nonce;
+		return parameters;
+		}
+		
+		function generateNonce() {
+			const charset = '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._~'
+			const result = [];
+			window.crypto.getRandomValues(new Uint8Array(32)).forEach(c =>
+			result.push(charset[c % charset.length]));
+			return result.join('');
+		}
+		
+	});
+	
+	
+	</script>
+
+	</body>
