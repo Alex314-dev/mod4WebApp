@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="ISO-8859-1">
+	<link rel="stylesheet" href="styles.css">
+<title>Database Explorer</title>
+</head>
+<body onload = "emailContents()">
+	<h1>Database Explorer</h1>
+	<div id = "emails">
+		<h1>Emails</h1>
+	</div>
+</body>
+
+
+<script type="text/javascript">
+	
+function emailContents() {
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+
+			var response = this.responseText;
+
+			var myObj = JSON.parse(response);
+
+			var table;
+
+			table = "<table style=\"width:65%\"> " +
+			"<tr> " +
+			"<th> <div style=\"text-align: left;\">" + "Sender" + "<div></th>" +
+			"<th> <div style=\"text-align: left;\">" + "Subject" + "<div></th>" +
+			"<th> <div style=\"text-align: left;\">" + "Date" + "<div></th>" +
+			"</tr>";
+
+
+			for (var i = 0; i < myObj.length; i++) {
+
+				var sender = myObj[i].senderEmail;
+				var subject = myObj[i].subject;
+				var date = myObj[i].send_at;
+
+			 table += "<tr> " +
+				"<td>" + sender + "</td>" +
+				"<td>" + subject + "</td>" +
+				"<td>" + date + "</td>" +
+				"</tr>";
+			}
+
+			table += "</table>";
+
+			document.getElementById("emails").innerHTML = table;
+		}
+	};
+
+	xmlhttp.open("GET", "http://localhost:8080/kickInProject/rest/emails", true);
+	xmlhttp.setRequestHeader("Content-type", "application/json");
+	xmlhttp.setRequestHeader("Accept", "application/json");
+	xmlhttp.send();
+
+}
+
+
+
+
+
+</script>
+
+
+</html>
